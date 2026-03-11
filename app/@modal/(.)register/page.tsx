@@ -3,7 +3,7 @@ import AuthModal from "@/components/AuthModal";
 
 export default function RegisterModal() {
   return (
-    <Modal>
+    <Modal disableDismissOnOverlay={true}>
       <AuthModal initialView="register" />
     </Modal>
   );

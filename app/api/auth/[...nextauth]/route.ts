@@ -1,36 +1,87 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcrypt";
 
 const handler = NextAuth({
+  adapter: PrismaAdapter(prisma),
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+      allowDangerousEmailAccountLinking: true,
+    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
-        password: { label: "Password", type: "password" }
+        email: {
+          label: "Email",
+          type: "text",
+          placeholder: "jsmith@example.com",
+        },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        // Add logic here to look up the user from the credentials supplied
-        // const user = { id: "1", name: "J Smith", email: "jsmith@example.com" }
-        
-        // Mock User for Prototype
-        if (credentials?.username === "admin" && credentials?.password === "password") {
-            return { id: "1", name: "Admin User", email: "admin@example.com" };
+        if (!credentials?.email || !credentials?.password) {
+          return null;
         }
 
-        if (credentials?.username === "user" && credentials?.password === "password") {
-            return { id: "2", name: "Demo User", email: "user@example.com" };
+        const user = await prisma.user.findUnique({
+          where: {
+            email: credentials.email,
+          },
+        });
+
+        if (!user || !user.hashedPassword) {
+          return null;
+        }
+
+        const passwordsMatch = await bcrypt.compare(
+          credentials.password,
+          user.hashedPassword
+        );
+
+        if (passwordsMatch) {
+          return user;
         }
 
         return null;
-      }
-    })
+      },
+    }),
   ],
   pages: {
-    signIn: '/login',
+    signIn: "/login",
   },
   session: {
     strategy: "jwt",
+  },
+  callbacks: {
+    async session({ session, user, token }) {
+      if (session.user) {
+        (session.user as any).id = token.sub || user?.id;
+        // Fetch extra user details from database if needed or pass from token
+        const dbUser = await prisma.user.findUnique({
+          where: { id: (session.user as any).id },
+          select: { role: true, balance: true, premium: true, createdAt: true }
+        });
+        if (dbUser) {
+          (session.user as any).role = dbUser.role;
+          (session.user as any).balance = dbUser.balance;
+          (session.user as any).premium = dbUser.premium;
+          (session.user as any).createdAt = dbUser.createdAt;
+        }
+      }
+      return session;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.sub = user.id;
+      }
+      return token;
+    }
   },
 });
 

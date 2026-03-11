@@ -1,18 +1,57 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import { useAuth } from '@/context/AuthContext';
 
 export default function SellerOnboarding() {
   const router = useRouter();
+  const { user, isLoggedIn, isLoading: isAuthLoading } = useAuth();
+  
   const [username, setUsername] = useState('');
   const [userId, setUserId] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleConnect = () => {
-    // Simulate connection
-    router.push('/seller/dashboard');
+  useEffect(() => {
+    if (!isAuthLoading) {
+      if (!isLoggedIn) {
+        router.push('/'); // Redirect to home if not logged in
+      } else if (user?.role === 'SELLER' || user?.role === 'ADMIN') {
+        router.push('/seller/dashboard'); // Redirect if already a seller/admin
+      }
+    }
+  }, [isLoggedIn, isAuthLoading, user, router]);
+
+  const handleConnect = async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      // Here you would ideally have an API endpoint to update the user's role to SELLER
+      // For now, we'll just simulate the process and redirect.
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      
+      // On success, the user role should be updated in the DB, and session refreshed.
+      // For this example, we push to dashboard and assume role is updated on next load.
+      router.push('/seller/dashboard');
+
+    } catch (err: any) {
+      setError(err.response?.data || 'An unexpected error occurred');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  // Render a loading state while checking auth
+  if (isAuthLoading || (isLoggedIn && (user?.role === 'SELLER' || user?.role === 'ADMIN'))) {
+    return (
+      <div className="min-h-screen bg-[#080c12] flex items-center justify-center">
+        <div className="text-white text-2xl font-bold animate-pulse">Loading...</div>
+      </div>
+    );
+  }
+  
   return (
     <div className="min-h-screen bg-[#080c12] flex items-center justify-center p-4">
       <div className="max-w-4xl w-full">
@@ -46,6 +85,12 @@ export default function SellerOnboarding() {
         <div className="bg-[#04080c] border border-[#1d2535] rounded-xl p-8">
           <h2 className="text-white text-xl font-bold text-center mb-8">Connect Roblox Account</h2>
           
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/50 text-red-500 text-[12px] p-3 rounded-md text-center mb-6">
+              {error}
+            </div>
+          )}
+
           <div className="space-y-6 max-w-xl mx-auto">
             <div>
               <label className="block text-[#9ca3af] text-sm font-medium mb-2">Roblox Username</label>
@@ -72,12 +117,13 @@ export default function SellerOnboarding() {
 
             <button 
               onClick={handleConnect}
-              className="w-full h-12 text-white font-bold rounded-lg transition-all hover:opacity-90 active:scale-[0.98]"
+              disabled={isLoading}
+              className="w-full h-12 text-white font-bold rounded-lg transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
               style={{
                 background: "linear-gradient(to right, #ed4c5c, #ff4457)"
               }}
             >
-              Connect Roblox Account
+              {isLoading ? 'Connecting...' : 'Connect Roblox Account'}
             </button>
           </div>
         </div>

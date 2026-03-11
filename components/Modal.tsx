@@ -3,29 +3,32 @@
 import React, { useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function Modal({ children }: { children: React.ReactNode }) {
+export default function Modal({ children, disableDismissOnOverlay = false }: { children: React.ReactNode, disableDismissOnOverlay?: boolean }) {
   const overlay = useRef<HTMLDivElement>(null);
   const wrapper = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   const onDismiss = useCallback(() => {
+    if (disableDismissOnOverlay) return;
     router.back();
-  }, [router]);
+  }, [router, disableDismissOnOverlay]);
 
   const onClick = useCallback(
     (e: React.MouseEvent) => {
+      if (disableDismissOnOverlay) return;
       if (e.target === overlay.current || e.target === wrapper.current) {
         if (onDismiss) onDismiss();
       }
     },
-    [onDismiss, overlay, wrapper]
+    [onDismiss, overlay, wrapper, disableDismissOnOverlay]
   );
 
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
+      if (disableDismissOnOverlay) return;
       if (e.key === "Escape") onDismiss();
     },
-    [onDismiss]
+    [onDismiss, disableDismissOnOverlay]
   );
 
   useEffect(() => {

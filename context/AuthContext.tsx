@@ -1,25 +1,40 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
+import { SessionProvider, useSession, signIn, signOut } from 'next-auth/react';
 
 interface AuthContextType {
   isLoggedIn: boolean;
+  isLoading: boolean;
+  user: any;
   login: () => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+const AuthProviderInternal: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { data: session, status } = useSession();
+  const isLoggedIn = status === "authenticated";
+  const isLoading = status === "loading";
 
-  const login = () => setIsLoggedIn(true);
-  const logout = () => setIsLoggedIn(false);
+  const login = () => signIn(); 
+  const logout = () => signOut({ callbackUrl: '/' });
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, isLoading, user: session?.user, login, logout }}>
       {children}
     </AuthContext.Provider>
+  );
+};
+
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  return (
+    <SessionProvider>
+      <AuthProviderInternal>
+        {children}
+      </AuthProviderInternal>
+    </SessionProvider>
   );
 };
 
