@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ⚡ BloxBolt - Secure Roblox Item Marketplace
 
-## Getting Started
+[![Live Demo](https://img.shields.io/badge/demo-live-green.svg)](https://bloxbolt.vercel.app/)
+[![Next.js](https://img.shields.io/badge/Next.js-15+-black.svg)](https://nextjs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-blue.svg)](https://tailwindcss.com/)
+[![Prisma](https://img.shields.io/badge/Prisma-7.4-teal.svg)](https://www.prisma.io/)
 
-First, run the development server:
+BloxBolt is a high-performance, secure third-party marketplace for trading virtual items from the Roblox platform. Designed with a gamer-centric aesthetic, it provides an automated escrow system for buying and selling items from games like *Blox Fruits*, *Pets Go*, *Murder Mystery 2*, and more.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 🚀 Features
+
+- **Automated Marketplace:** Seamlessly list, browse, and purchase virtual items.
+- **Escrow Protection:** Integrated safety mechanisms to ensure secure transactions between buyers and sellers.
+- **Seller Dashboard:** Comprehensive tools for sellers to manage listings, track sales history, and handle onboarding.
+- **Tiered Commission:** Dynamic fee structure (5% for Premium members, 10% for standard users).
+- **Discord Integration:** Automated ticket systems for support and transaction verification.
+- **Role-Based Access:** Distinct workflows for Users, Sellers, and Administrators.
+- **Responsive Design:** A modern, dark-themed UI optimized for all devices using Tailwind CSS 4.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend:** [Next.js 15+](https://nextjs.org/) (App Router), [React 19](https://react.dev/)
+- **Styling:** [Tailwind CSS 4](https://tailwindcss.com/)
+- **Database & ORM:** [PostgreSQL](https://www.postgresql.org/) with [Prisma](https://www.prisma.io/)
+- **Authentication:** [NextAuth.js](https://next-auth.js.org/)
+- **Validation:** [Zod](https://zod.dev/)
+- **Deployment:** [Vercel](https://vercel.com/)
+
+---
+
+## 📂 Project Structure
+
+```text
+├── app/                  # Next.js App Router pages and API routes
+│   ├── market/           # Marketplace browsing page
+│   ├── seller/           # Seller dashboard and onboarding
+│   └── api/              # Backend API endpoints (Auth, Items, etc.)
+├── components/           # Reusable UI components (Navbar, Footer, Modals)
+├── context/              # React Context providers (Auth, etc.)
+├── lib/                  # Shared utilities and server actions
+├── prisma/               # Database schema and migrations
+└── public/               # Static assets and images
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ⚙️ Getting Started
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Prerequisites
 
-## Learn More
+- Node.js 20+
+- PostgreSQL database
+- npm / yarn / pnpm
 
-To learn more about Next.js, take a look at the following resources:
+### Installation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-username/bloxbolt.git
+   cd bloxbolt
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-## Deploy on Vercel
+3. **Set up environment variables:**
+   Create a `.env` file in the root directory and add the following:
+   ```env
+   DATABASE_URL="postgresql://user:password@localhost:5432/bloxbolt"
+   NEXTAUTH_SECRET="your-secret-here"
+   NEXTAUTH_URL="http://localhost:3000"
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. **Initialize the database:**
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+Open [http://localhost:3000](http://localhost:3000) to view the application.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## ⚠️ Disclaimer
+
+BloxBolt is an independent marketplace and is **not affiliated with, sponsored by, or endorsed by Roblox Corporation**. All Roblox-related assets are property of their respective owners.
