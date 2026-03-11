@@ -2,6 +2,16 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { getItems } from '@/lib/actions/items';
+import { Item } from '@prisma/client';
+
+interface DisplayItem {
+  name: string;
+  price: number;
+  displayPrice: string;
+  robux: string;
+  image: string;
+  isNew: boolean;
+}
 
 // Assets
 const imgBloxFruits = "/assets/market/blox-fruits-logo.webp";
@@ -20,13 +30,13 @@ export default function MarketPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(15000);
-  const [dbItems, setDbItems] = useState<any[]>([]);
+  const [dbItems, setDbItems] = useState<DisplayItem[]>([]);
 
   useEffect(() => {
     const fetchItems = async () => {
       const result = await getItems();
       if (result.success && result.data && result.data.length > 0) {
-        setDbItems(result.data.map((item: any) => ({
+        setDbItems(result.data.map((item: Item) => ({
           name: item.name,
           price: item.price,
           displayPrice: `${item.price} $`,

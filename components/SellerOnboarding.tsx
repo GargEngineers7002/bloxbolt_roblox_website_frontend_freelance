@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
 import { useAuth } from '@/context/AuthContext';
 
 export default function SellerOnboarding() {
@@ -36,8 +35,9 @@ export default function SellerOnboarding() {
       // For this example, we push to dashboard and assume role is updated on next load.
       router.push('/seller/dashboard');
 
-    } catch (err: any) {
-      setError(err.response?.data || 'An unexpected error occurred');
+    } catch (err) {
+      const error = err as { response?: { data?: string } };
+      setError(error.response?.data || 'An unexpected error occurred');
     } finally {
       setIsLoading(false);
     }

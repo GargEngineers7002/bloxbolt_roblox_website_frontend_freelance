@@ -2,11 +2,12 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
 import { SessionProvider, useSession, signIn, signOut } from 'next-auth/react';
+import { Session } from 'next-auth';
 
 interface AuthContextType {
   isLoggedIn: boolean;
   isLoading: boolean;
-  user: any;
+  user: Session['user'] | null | undefined;
   login: () => void;
   logout: () => void;
 }

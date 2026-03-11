@@ -106,8 +106,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ initialView = "login" }) => {
         // to ensure all parallel route slots are cleared if router.push is sticking.
         window.location.href = "/market";
       }
-    } catch (err: any) {
-      setError(err.response?.data || "An unexpected error occurred");
+    } catch (err) {
+      const error = err as { response?: { data?: string } };
+      setError(error.response?.data || "An unexpected error occurred");
       setIsLoading(false);
     }
   };
